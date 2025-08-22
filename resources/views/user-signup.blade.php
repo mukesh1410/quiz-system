@@ -46,10 +46,10 @@
           class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none">
         </div>
         <button type="submit" class="w-full bg-blue-500 rounded-xl px-4 py-2 text-white">Signup</button>
-        {{-- <div class="text-center">
-          <span class="inline">Not a member?</span>
-          <a href="/signup" class="inline text-blue-500 hover:underline">Signup now</a>
-        </div> --}}
+        <div class="text-center">
+          <span class="inline">Already have an account?</span>
+          <a href="/user-login" class="inline text-blue-500 hover:underline">Login now</a>
+        </div>
       </form>
   </div> 
 </div>

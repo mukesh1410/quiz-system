@@ -67,4 +67,13 @@ Route::middleware('CheckAdminAuth')->group(function(){
     Route::get('end-quiz',[AdminController::class,'endQuiz']);
     Route::get('show-quiz/{id}/{quizName}',[AdminController::class,'showQuiz']);
     Route::get('quiz-list/{id}/{category_name}',[AdminController::class,'quizList']);
+    Route::get('/dashboard/user-view/{id}',[AdminController::class,'userView'])->name('user-view');
+    Route::get('/dashboard/update/{id}',[AdminController::class,'getUser'])->name('user-get');
+    Route::post('/dashboard/update-user/{id}', [AdminController::class, 'updateUser'])->name('user-update');
+    Route::post('/dashboard/user/delete/{id}', [AdminController::class, 'deleteUser'])->name('user-delete');
 });
+
+
+//other routes
+
+Route::view('/adminpop', 'admin-pop');

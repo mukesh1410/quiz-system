@@ -1,18 +1,19 @@
-<nav class="bg-white shadow-md px-4 py-3">
+<nav class="bg-neutral-400 fixed top-0 left-0 w-full z-50 shadow-md px-4 py-3">
     <div class="flex justify-between items-center">
-        <div class="text-2xl text-gray-700 hover:text-blue-500 cursor-pointer">
-            Quiz System
-        </div>
+        <a href="/" class="text-2xl text-black hover:text-white cursor-pointer">Quiz System</a>
         <div class="flex items-center space-x-4">
-            <a href="/" class="text-green-900 hover:text-blue-500">Home</a>
-            <a href="/categories-list" class="text-green-900 hover:text-blue-500">Categories</a>
+            <a href="/admin-login" class="text-black hover:text-white">Admin Panel</a>
+            <a href="/" class="text-black hover:text-white">Home</a>
+            <a href="/categories-list" class="text-black hover:text-white">Categories</a>
             @if (Session('user'))
-                <a href="/user-details" class="text-green-900 hover:text-blue-500">Welcome {{ session('user')->name }}</a>
-                <a href="/user-logout" class="text-green-900 hover:text-blue-500">Logout</a>
+                <a href="/user-details" class="text-black hover:text-white">Welcome {{ ucfirst(strtolower(session('user')->name)) }}</a>
+                <a href="/user-logout" class="text-black hover:text-white">Logout</a>
             @else
-                <a href="/user-login" class="text-green-900 hover:text-blue-500">Login</a>
-                <a href="/user-signup" class="text-green-900 hover:text-blue-500">Signup</a>
+                <a href="/user-login" class="text-black hover:text-white">User Panel</a>
+                {{-- <a href="/user-login" class="text-black hover:text-white">Login</a> --}}
+                    {{-- <a href="/user-signup" class="text-black hover:text-white">Signup</a> --}}
             @endif
         </div>
     </div>
 </nav>
+

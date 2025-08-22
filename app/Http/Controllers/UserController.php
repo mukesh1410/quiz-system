@@ -21,8 +21,8 @@ use Razorpay\Api\Api;
 class UserController
 {
     function welcome(){
-        $categories = Category::withCount('quizzes')->orderBy('quizzes_count','desc')->take(5)->get();
-        $quizData = Quiz::withCount('Records')->orderBy('records_count','desc')->take(5)->get();
+        $categories = Category::withCount('quizzes')->orderBy('quizzes_count','desc')->paginate(5);
+        $quizData = Quiz::withCount('Records')->orderBy('records_count','desc')->paginate(5);
         return view('welcome',['categories' => $categories, 'quizData' => $quizData]);
     }
 

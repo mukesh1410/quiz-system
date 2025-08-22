@@ -31,7 +31,7 @@
                         class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
                     @foreach ($categories as $category)
-                      <option value={{$category->id}}>{{$category->name}}</option>
+                      <option value={{$category->id}}>{{ucfirst(strtolower($category->name))}}</option>
                     @endforeach
                     </select>
                 </div>

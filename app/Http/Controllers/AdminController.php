@@ -66,7 +66,7 @@ class AdminController extends Controller
     }
 
     function categories(){
-        $categories = Category::get();
+        $categories = Category::paginate(5);
         $admin = Session::get('admin');
         if($admin){ 
             return view('categories',['name' => $admin->name, 'categories' => $categories]);
@@ -195,5 +195,28 @@ class AdminController extends Controller
         }else{
             return redirect('admin-login');
         }   
+    }
+
+    public function userView(int $id){
+        $user = User::whereId($id)->get();
+        return view('admin-users', compact('user'));
+    }
+
+    public function getUser(int $id){
+        $user = User::find($id);
+        return view('admin-user-update', compact('user'));
+    }
+
+    public function updateUser(Request $req, int $id){
+      User::where('id', $id)->update([
+        'name' => $req->name,
+        'email' => $req->email,
+      ]);
+      return redirect()->route('dashboard')->with('success', 'User updated successfully.');
+    }
+
+    public function deleteUser(int $id){
+        User::whereId($id)->delete();
+        return redirect()->route('dashboard')->with('success', 'User delete successfully.');
     }
 }

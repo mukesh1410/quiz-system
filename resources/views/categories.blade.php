@@ -43,10 +43,10 @@
 
         <!-- Category List -->
         <div class="w-full max-w-3xl">
-            <h3 class="text-2xl font-bold text-blue-600 mb-4">Category List</h3>
+            <h3 class="text-2xl font-bold text-blue-600 mb-4">Categories Lists</h3>
             <ul class="bg-white rounded-2xl shadow overflow-hidden divide-y divide-gray-200">
                 <li class="bg-gray-100 font-semibold text-gray-600">
-                    <ul class="grid grid-cols-4 px-6 py-3">
+                    <ul class="grid grid-cols-4 bg-neutral-400 px-6 py-3">
                         <li>S.NO</li>
                         <li>NAME</li>
                         <li>CREATOR</li>
@@ -54,10 +54,10 @@
                     </ul>
                 </li>
                 @foreach ($categories as $category)
-                    <li class="hover:bg-gray-50 transition">
+                    <li class="hover:bg-gray-100 transition">
                         <ul class="grid grid-cols-4 px-6 py-3 items-center">
                             <li class="w-30">{{ $category->id }}</li>
-                            <li class="w-70">{{ $category->name }}</li>
+                            <li class="w-70">{{ ucfirst(strtolower($category->name)) }}</li>
                             <li class="w-70">{{ $category->creator }}</li>
                             <li class="w-30 flex">
                                 <a href="{{route('delete',$category->id)}}">
@@ -73,6 +73,7 @@
                     </li>
                 @endforeach
             </ul>
+            <div class="mt-5">{{$categories->links()}}</div>
         </div>
     </div>
 </body>
