@@ -12,14 +12,12 @@ COPY . .
 
 # जरूरी PHP एक्सटेंशन्स और पैकेज इंस्टॉल करें
 RUN apt-get update && apt-get install -y \
-    libpng-dev libonig-dev libxml2-dev zip unzip git curl && \
-    docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd && \
+    libpng-dev libonig-dev libxml2-dev zip unzip git curl libpq-dev && \
+    docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd pdo_pgsql && \
     a2enmod rewrite
 
 # Composer dependencies इंस्टॉल करें (vendor फोल्डर बन जाएगा)
 RUN composer install --no-dev --optimize-autoloader
-
-RUN apt-get update && apt-get install -y php-pgsql
 
 # storage, bootstrap/cache और public फोल्डर के परमिशन सही करें
 RUN chown -R www-data:www-data storage bootstrap/cache public
