@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y \
 # Composer dependencies इंस्टॉल करें (vendor फोल्डर बन जाएगा)
 RUN composer install --no-dev --optimize-autoloader
 
+RUN apt-get update && apt-get install -y php-pgsql
+
 # storage, bootstrap/cache और public फोल्डर के परमिशन सही करें
 RUN chown -R www-data:www-data storage bootstrap/cache public
 

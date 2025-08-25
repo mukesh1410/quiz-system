@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <x-user-navbar></x-user-navbar>
+    <x-user-navbar></x-user-navbar> 
 
     <div class="flex flex-col min-h-screen items-center bg-gray-100 pt-10">
         @if(session('message-success'))
