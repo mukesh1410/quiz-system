@@ -15,7 +15,7 @@
             {{ session('category') }}
         </div>
     @endif
-
+    
     <div class="flex flex-col items-center py-10 space-y-10">
 
         <!-- Add Category Form -->

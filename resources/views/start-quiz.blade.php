@@ -15,11 +15,12 @@
         </div>
     @endif
     <div class="flex flex-col items-center py-10 space-y-10">
-        <h1 class="text-4xl font-bold text-center text-green-700 mb-6">{{ str_replace(' ','-',$quizName)}}</h1>
+        <h1 class="pt-5 text-4xl font-bold text-center text-green-700 mb-6">{{ str_replace(' ','-',$quizName)}}</h1>
         <h2 class="text-lg font-bold text-center text-green-700 mb-6">This Quiz container {{$quizCount}} Questions and no limit to attempt this Quiz</h2>
         <h1 class="text-2xl font-bold text-center text-green-700 mb-6">Good Luck</h1>
         @if (session('user'))
             <a href="/mcq/{{session('firstMCQ')->id.'/'.$quizName}}" type="submit" class="bg-blue-500 rounded-md px-4 py-2 my-5 text-white">Start Quiz</a>
+            <a href="/" type="submit" class="bg-blue-500 rounded-md px-4 py-2 my-5 text-white">Back To Home</a>
         @else
         <a href="/user-signup-quiz" type="submit" class="bg-blue-500 rounded-md px-4 py-2 my-5 text-white">SignUp for Start Quiz</a>    
         <a href="/user-login-quiz" type="submit" class="bg-blue-500 rounded-md px-4 py-2 my-5 text-white">Login for Start Quiz</a>

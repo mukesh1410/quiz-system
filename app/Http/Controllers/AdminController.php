@@ -20,7 +20,7 @@ class AdminController extends Controller
             'password' => 'required'
         ]);
       
-        $admin = Admin::where([ //using eloquent method
+        $admin = Admin::where([
             'name' => $req->name,
             'password' => $req->password
         ])->first();
@@ -99,6 +99,7 @@ class AdminController extends Controller
     }
 
     function deleteCategory(String $id){
+        $admin = Session::get('admin');
         $delete = Category::whereId($id)->delete();
 
         if($delete){
@@ -128,7 +129,11 @@ class AdminController extends Controller
 
             }else{
                 $quiz = Session::get('quizDetails');
-                $totalMCQs = $quiz && Mcq::where('quiz_id', $quiz->id)->count();
+            if($quiz){
+                $totalMCQs = Mcq::where('quiz_id', $quiz->id)->count();
+            } else {
+                $totalMCQs = 0;
+            }
             }
             return view('add-quiz',['name' => $admin->name, 'categories' => $categories, 'totalMCQs' => $totalMCQs]);
         }else{
@@ -173,13 +178,13 @@ class AdminController extends Controller
         return redirect("/admin-categories");
     }
 
-    function showQuiz(String $id, $quizName){
+    function showQuiz(String $id){
         $admin = Session::get('admin');
         $mcqs = Mcq::where('quiz_id',$id)->get();
         $totalMCQs = 0;
 
         if($admin){ 
-            return view('show-quiz',['name'=>$admin->name,'mcqs'=>$mcqs,'quizName'=>$quizName]);
+            return view('show-quiz',['name'=>$admin->name,'mcqs'=>$mcqs]);
         }else{
             return redirect('admin-login');
         }
@@ -195,6 +200,15 @@ class AdminController extends Controller
         }else{
             return redirect('admin-login');
         }   
+    }
+
+    function quizDelete($id){
+        $user = Session::get('admin');
+        
+        if($user){
+            $quiz = Quiz::whereId($id)->delete();
+            return view('user-quiz-list');
+        }
     }
 
     public function userView(int $id){

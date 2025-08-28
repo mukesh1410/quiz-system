@@ -16,7 +16,7 @@
     <div class="flex flex-col min-h-screen items-center px-4">
         
         <!-- Quiz Result Heading -->
-        <h1 class="text-3xl font-extrabold text-green-800 text-center my-6">
+        <h1 class="pt-10 text-3xl font-extrabold text-green-800 text-center my-6">
             Quiz Result
         </h1>
         @if ($correctAnswers*100/count($resultData) > 30)

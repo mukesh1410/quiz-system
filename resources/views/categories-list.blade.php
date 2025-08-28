@@ -15,7 +15,7 @@
                 <p class="text-green-500 font-bold">{{session('message-success')}}</p>
             </div>
         @endif
-        <h1 class="text-4xl font-bold text-grenn-900 p-5">Check Your Skills</h1>
+        <h1 class="text-4xl mt-10 text-green-900 font-bold text-grenn-900 p-5">Check Your Skills</h1>
         <div class="w-full max-w-md">
             <div class="relative">
                 <form action="/search-quiz" method="GET">
@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="w-full max-w-3xl">
-        <h3 class="text-2xl font-bold text-green-900 text-center my-5">Top Categories</h3>
+        <h3 class="text-2xl font-bold text-green-900 text-center my-5">Categories Lists</h3>
         <ul class="bg-white rounded-2xl shadow overflow-hidden divide-y divide-gray-200">
             <li class="bg-gray-100 font-semibold text-gray-600">
                 <ul class="grid grid-cols-4 px-6 py-3">

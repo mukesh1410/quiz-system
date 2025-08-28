@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Add Quiz Page</title>
+    <title>Add Quiz Page</title> 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -110,7 +110,8 @@
                 >
                     Add and Submit
                 </button>
-                <a href="/end-quiz" class="w-full bg-red-500 rounded-xl px-4 py-2 text-white block text-center" >Finish Quiz</a>
+                <a href="/end-quiz" class="w-full bg-red-500 rounded-xl px-4 py-2 text-white block text-center" >
+                    Finish Quiz</a>
             </form>
             @endif
         </div>

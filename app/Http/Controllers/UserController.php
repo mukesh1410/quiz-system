@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
@@ -18,11 +19,12 @@ use App\Mail\userForgotPassword;
 use Spatie\Browsershot\Browsershot;
 use Razorpay\Api\Api;
 
+
 class UserController
 {
     function welcome(){
-        $categories = Category::withCount('quizzes')->orderBy('quizzes_count','desc')->paginate(5);
-        $quizData = Quiz::withCount('Records')->orderBy('records_count','desc')->paginate(5);
+        $categories = Category::withCount('quizzes')->orderBy('quizzes_count','desc')->paginate(5, ['*'], 'category_page');
+        $quizData = Quiz::withCount('Records')->orderBy('records_count','desc')->paginate(5, ['*'], 'quiz_page');
         return view('welcome',['categories' => $categories, 'quizData' => $quizData]);
     }
 
@@ -34,14 +36,6 @@ class UserController
     function userQuizList($id, $category){
         $quizData = Quiz::withCount('Mcq')->where('category_id',$id)->get();
         return view('user-quiz-list', ['quizData' => $quizData, 'category' => $category]);
-    }
-
-    function startQuiz($id, $name){
-        $quizCount =  Mcq::where('quiz_id',$id)->count();
-        $mcqs =  Mcq::where('quiz_id',$id)->get();
-        Session::put('firstMCQ',$mcqs[0]);
-        $quizName = $name;
-        return view('start-quiz',['quizName' => $quizName, 'quizCount' => $quizCount]);
     }
 
     function userSignup(Request $req){
@@ -188,10 +182,18 @@ class UserController
         $quizRecord = Record::WithQuiz()->where('user_id', Session::get('user')->id)->get();
         return view('user-details', ['quizRecord' => $quizRecord]);
     }
-
+ 
     function searchQuiz(Request $request){
         $quizData = Quiz::withCount('Mcq')->where('name','Like','%'.$request->search.'%')->get();
         return view('quiz-search',['quizData' => $quizData, 'quiz' => $request->search]);
+    }
+
+    function startQuiz($id, $name){
+        $quizCount =  Mcq::where('quiz_id',$id)->count();
+        $mcqs =  Mcq::where('quiz_id',$id)->get();
+        Session::put('firstMCQ',$mcqs[0]);
+        $quizName = $name;
+        return view('start-quiz',['quizName' => $quizName, 'quizCount' => $quizCount]);
     }
 
     function verifyUser($email){
@@ -240,49 +242,33 @@ class UserController
         return view('certificate',['data' => $data]);
     }
 
-    function downloadCertificate(){
-        $data = [];
-        $data['quiz'] = str_replace('-',' ',Session::get('currentQuiz')['quizName']);
-        $data['name'] = Session::get('user')['name'];
-        $html =  view('download-certificate',['data' => $data])->render();
-        return response(
-            Browsershot::html($html)->pdf()
-        )->withHeaders([
-            'Content-Type' => 'application/pdf',
-            'Content-disposition' => 'attachment;filename=certificate.pdf'
-        ]);
-    }
-
-     public function pay()
-    {
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
-
-        $orderData = [
-            'receipt' => 'order_' . rand(1000, 9999),
-            'amount' => 1 * 100,
-            'currency' => 'INR',
-            'payment_capture' => 1
+    
+    public function downloadCertificate(){
+        
+        $data = [
+            'quiz' => str_replace('-', ' ', Session::get('currentQuiz')['quizName'] ?? ''),
+            'name' => Session::get('user')['name'] ?? 'Guest',
+            'date' => date('Y-m-d'),
         ];
 
-        $order = $api->order->create($orderData);
-
-        return view('payment', ['orderId' => $order['id']]);
-    }
-
-    public function callback(Request $request)
-    {
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $html = view('download-certificate', ['data' => $data])->render();
 
         try {
-            $api->utility->verifyPaymentSignature([
-                'razorpay_order_id' => $request->razorpay_order_id,
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_signature' => $request->razorpay_signature
+            return response(
+                Browsershot::html($html)
+                    ->setChromeExecutablePath('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe')
+                    ->setOption('args', ['--no-sandbox', '--disable-setuid-sandbox'])
+                    ->pdf()
+            )->withHeaders([
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="certificate.pdf"',
             ]);
-
-            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false]);
+            \Log::error('PDF Generation Error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to generate PDF',
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 }

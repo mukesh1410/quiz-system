@@ -19,7 +19,7 @@
         @endif
 
         @if (session('success'))
-        <div>
+        <div> 
             <p class="text-green-500 font-bold">{{session('success')}}</p>
         </div>
         @endif
@@ -49,19 +49,18 @@
         <ul class="bg-white rounded-2xl shadow-md overflow-hidden divide-y divide-gray-200">
             <!-- Header -->
             <li class="bg-gray-100 font-semibold text-gray-600">
-                <ul class="grid grid-cols-5 items-center text-center bg-neutral-300 px-6 py-3">
+                <ul class="grid grid-cols-4 items-center text-center bg-neutral-300 px-6 py-3">
                     <li>S.NO</li>
                     <li>NAME</li>
                     <li>Total Quiz</li>
                     <li>VIEW</li>
-                    <li>DELETE</li>
                 </ul>
             </li>
 
             <!-- Rows -->
             @foreach ($categories as $key=>$category)
                 <li class="even:bg-gray-200">
-                    <ul class="grid grid-cols-5 items-center text-center px-6 py-3">
+                    <ul class="grid grid-cols-4 items-center text-center px-6 py-3">
                         <li>{{ $key+1 }}</li>
                         <li>{{ $category->name }}</li>
                         <li>{{ $category->quizzes_count }}</li>
@@ -70,16 +69,11 @@
                                 <i class="fa-solid fa-eye cursor-pointer text-gray-600"></i>
                             </a>
                         </li>
-                        <li>
-                            <a href="">
-                                <i class="fa-solid fa-trash cursor-pointer text-gray-600"></i>
-                            </a>
-                        </li>
                     </ul>
                 </li>
             @endforeach
         </ul>
-        <div class="mt-5">{{$categories->links()}}</div>
+        <div class="mt-5">{{ $categories->appends(request()->except('category_page'))->links() }}</div>
     </div>
     <div class="max-w-xl mx-auto">
     <h3 class="text-2xl font-bold text-green-900 text-center my-5">Quiz Lists</h3>
@@ -114,8 +108,10 @@
             </li>
         @endforeach
     </ul>
-    <div class="mt-6">{{$quizData->links()}}</div>
-</div>
+    <div class="mt-[-60px] mb-[10px]">
+    {{ $quizData->appends(request()->except('quiz_page'))->links() }}
+    </div>
+    </div>
     </div>
     <x-footer-user></x-footer-user>
 </body>

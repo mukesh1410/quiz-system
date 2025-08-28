@@ -5,10 +5,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Artisan;
 
-Route::get('/run-migration', function () {
-    Artisan::call('migrate', ['--force' => true]);
-    return 'Migration completed successfully!';
-});
+// Route::get('/run-migration', function () {
+//     Artisan::call('migrate', ['--force' => true]);
+//     return 'Migration completed successfully!';
+// });
 
 Route::get('/',[UserController::class,'welcome']);
 Route::get('/user-quiz-list/{id}/{category}',[UserController::class,'userQuizList']);
@@ -71,8 +71,9 @@ Route::middleware('CheckAdminAuth')->group(function(){
     Route::get('add-quiz',[AdminController::class,'addQuiz']);
     Route::post('add-mcq',[AdminController::class,'addMCQs']);
     Route::get('end-quiz',[AdminController::class,'endQuiz']);
-    Route::get('show-quiz/{id}/{quizName}',[AdminController::class,'showQuiz']);
+    Route::get('show-quiz/{id}',[AdminController::class,'showQuiz']);
     Route::get('quiz-list/{id}/{category_name}',[AdminController::class,'quizList']);
+    Route::post('quiz-list/{id}',[AdminController::class,'quizDelete'])->name('quizDelete');
     Route::get('/dashboard/user-view/{id}',[AdminController::class,'userView'])->name('user-view');
     Route::get('/dashboard/update/{id}',[AdminController::class,'getUser'])->name('user-get');
     Route::post('/dashboard/update-user/{id}', [AdminController::class, 'updateUser'])->name('user-update');
