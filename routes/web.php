@@ -15,9 +15,11 @@ Route::get('/user-quiz-list/{id}/{category}',[UserController::class,'userQuizLis
 Route::get('/start-quiz/{id}/{name}',[UserController::class,'startQuiz']);
 // Route::view('user-signup','user-signup');
 Route::post('/user-signup',[UserController::class,'userSignup'])->name('user-signup');
+Route::get('verify/otp', [UserController::class, 'verifyOtp'])->name('verify.otp');
+Route::post('verify/otp/store', [UserController::class, 'verifyOtpStore'])->name('verify.otp.store');
 Route::get('/user-logout',[UserController::class,'userLogout']);
 Route::get('/user-signup-quiz',[UserController::class,'userSignupQuiz']);
-
+ 
 Route::get('categories-list',[UserController::class, 'categories']);
 Route::get('certificate',[UserController::class, 'certificate']);
 Route::get('download-certificate',[UserController::class, 'downloadCertificate']);

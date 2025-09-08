@@ -11,7 +11,7 @@
 <body>
     <x-user-navbar></x-user-navbar> 
 
-    <div class="flex flex-col min-h-screen items-center bg-gray-100 pt-10">
+    <div class="flex flex-col min-h-screen mt-5 items-center bg-gray-100 pt-10">
         @if(session('message-success'))
             <div>
                 <p class="text-green-500 font-bold">{{session('message-success')}}</p>

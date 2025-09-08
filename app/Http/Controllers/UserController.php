@@ -14,12 +14,14 @@ use App\Models\Mcq;
 use App\Models\User;
 use App\Models\Record;
 use App\Models\MCQ_Record;
+use App\Models\EmailOtp;
 use App\Mail\VerifyUser;
+use App\Mail\EmailOtpMail;
 use App\Mail\userForgotPassword;
 use Spatie\Browsershot\Browsershot;
 use Razorpay\Api\Api;
 
-
+ 
 class UserController
 {
     function welcome(){
@@ -39,30 +41,97 @@ class UserController
     }
 
     function userSignup(Request $req){
-        $validate = $req->validate([
+        $req->validate([
             'name' => 'required|min:3',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:3|confirmed'
         ]);
 
-        $user = User::create([
-            'name' => $req->name,
+        $otp = rand(100000, 999999);
+
+        EmailOtp::updateOrCreate([
+            'email' => $req->email
+        ],[
             'email' => $req->email,
-            'password' => Hash::make($req->password)
+            'otp' => $otp,
+            'expired_at' => now()->addMinute(10),
         ]);
 
-        $link = Crypt::encryptString($user->email);
-        $link = url('/verify-user/'.$link);
-        Mail::to($user->email)->send(new VerifyUser($link));
+        Mail::to($req->email)->send(new EmailOtpMail($otp));
+
+        $req->session()->put('register_email', $req->email);
+        $req->session()->put('register_name', $req->name);
+        $req->session()->put('register_password', Hash::make($req->password));
+
+        return redirect()->route('verify.otp');
+
+        // $validate = $req->validate([
+        //     'name' => 'required|min:3',
+        //     'email' => 'required|email|unique:users',
+        //     'password' => 'required|min:3|confirmed'
+        // ]);
+
+        // $user = User::create([
+        //     'name' => $req->name,
+        //     'email' => $req->email,
+        //     'password' => Hash::make($req->password)
+        // ]);
+
+        // $link = Crypt::encryptString($user->email);
+        // $link = url('/verify-user/'.$link);
+        // Mail::to($user->email)->send(new VerifyUser($link));
+
+        // if($user){
+        //     Session::put('user',$user);
+        //     if(Session::has('quiz-url')){
+        //         $url = Session::get('quiz-url');
+        //         Session::forget('quiz-url');
+        //         return redirect($url)->with('message-success','User Registered Successfully, Please check email to verify account');
+        //     }else{
+        //         return redirect('/')->with('message-success','User Registered Successfully, Please check email to verify account');
+        //     }
+        // }
+    }
+
+    function verifyOtp(){
+        return view('email_otp_verify');
+    }
+
+    function verifyOtpStore(Request $req){
+        $req->validate([
+            'otp' => ['required','string','size:6']
+        ]);
+
+        $email = $req->Session()->get('register_email');
+        $name = $req->Session()->get('register_name');
+        $password = $req->Session()->get('register_password');
+
+        $emailOtp = EmailOtp::where('email',$email)->where('otp',$req->otp)->where('expired_at','>=',now())->first();
+
+        if(!$emailOtp){
+            return redirect()->back()->withInput()->with(['message' => 'Invalid OTP']);
+        }
+
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+        ]);
+
+        $emailOtp->delete();
+
+        $req->session()->forget('register_email');
+        $req->session()->forget('register_name');
+        $req->session()->forget('register_password');
 
         if($user){
             Session::put('user',$user);
             if(Session::has('quiz-url')){
                 $url = Session::get('quiz-url');
                 Session::forget('quiz-url');
-                return redirect($url)->with('message-success','User Registered Successfully, Please check email to verify account');
+                return redirect($url)->with('message-success','User Registered Successfully');
             }else{
-                return redirect('/')->with('message-success','User Registered Successfully, Please check email to verify account');
+                return redirect('/')->with('message-success','User Registered Successfully');
             }
         }
     }
