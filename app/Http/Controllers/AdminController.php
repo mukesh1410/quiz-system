@@ -54,7 +54,7 @@ class AdminController extends Controller
             return redirect()->route('login');
         }
     }
-
+ 
     function dashboard(){
         $admin = Session::get('admin');
         if($admin){

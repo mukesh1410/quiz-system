@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('email_otps', function (Blueprint $table) {
-            $table->id();
-            $table->string('email')->unique(); 
-            $table->string('otp');
-            $table->timestamp('expired_at');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('email_otps')) {
+            Schema::create('email_otps', function (Blueprint $table) {
+                $table->id();
+                $table->string('email')->unique(); 
+                $table->string('otp');
+                $table->timestamp('expired_at');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

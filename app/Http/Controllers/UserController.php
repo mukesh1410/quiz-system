@@ -20,28 +20,13 @@ use App\Mail\EmailOtpMail;
 use App\Mail\userForgotPassword;
 use Spatie\Browsershot\Browsershot;
 use Razorpay\Api\Api;
+use Illuminate\Support\Facades\Auth;
 
  
 class UserController
 {
-    function welcome(){
-        $categories = Category::withCount('quizzes')->orderBy('quizzes_count','desc')->paginate(5, ['*'], 'category_page');
-        $quizData = Quiz::withCount('Records')->orderBy('records_count','desc')->paginate(5, ['*'], 'quiz_page');
-        return view('welcome',['categories' => $categories, 'quizData' => $quizData]);
-    }
-
-    function categories(){
-        $categories = Category::withCount('quizzes')->orderBy('quizzes_count','desc')->paginate(5);
-        return view('categories-list',['categories' => $categories]);
-    }
-
-    function userQuizList($id, $category){
-        $quizData = Quiz::withCount('Mcq')->where('category_id',$id)->get();
-        return view('user-quiz-list', ['quizData' => $quizData, 'category' => $category]);
-    }
-
-    function userSignup(Request $req){
-        $req->validate([
+     function userSignup(Request $req){
+        $users = $req->validate([
             'name' => 'required|min:3',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:3|confirmed'
@@ -59,9 +44,11 @@ class UserController
 
         Mail::to($req->email)->send(new EmailOtpMail($otp));
 
-        $req->session()->put('register_email', $req->email);
-        $req->session()->put('register_name', $req->name);
-        $req->session()->put('register_password', Hash::make($req->password));
+        Session::put('users',$users);
+
+        // $req->session()->put('register_email', $req->email);
+        // $req->session()->put('register_name', $req->name);
+        // $req->session()->put('register_password', Hash::make($req->password));
 
         return redirect()->route('verify.otp');
 
@@ -93,6 +80,35 @@ class UserController
         // }
     }
 
+public function welcome()
+{
+    $user = Auth::user();  // Laravel ka authenticated user la rahe hain
+    if ($user && $user->google2fa_secret && !session('2fa_verified')) {
+        return redirect()->route('2fa.verify');
+    }
+
+    $categories = Category::withCount('quizzes')->orderBy('quizzes_count', 'desc')->paginate(5, ['*'], 'category_page');
+    $quizData = Quiz::withCount('Records')->orderBy('records_count', 'desc')->paginate(5, ['*'], 'quiz_page');
+
+    return view('welcome', [
+        'categories' => $categories,
+        'quizData' => $quizData
+    ]);
+}
+
+
+    function categories(){
+        Session::get('users');
+        $categories = Category::withCount('quizzes')->orderBy('quizzes_count','desc')->paginate(5);
+        return view('categories-list',['categories' => $categories]);
+    }
+
+    function userQuizList($id, $category){
+        Session::get('users');
+        $quizData = Quiz::withCount('Mcq')->where('category_id',$id)->get();
+        return view('user-quiz-list', ['quizData' => $quizData, 'category' => $category]);
+    }
+
     function verifyOtp(){
         return view('email_otp_verify');
     }
@@ -102,9 +118,9 @@ class UserController
             'otp' => ['required','string','size:6']
         ]);
 
-        $email = $req->Session()->get('register_email');
-        $name = $req->Session()->get('register_name');
-        $password = $req->Session()->get('register_password');
+        $email = Session::get('users')['email'];
+        $name = Session::get('users')['name'];
+        $password = Session::get('users')['password'];
 
         $emailOtp = EmailOtp::where('email',$email)->where('otp',$req->otp)->where('expired_at','>=',now())->first();
 
@@ -115,14 +131,12 @@ class UserController
         $user = User::create([
             'name' => $name,
             'email' => $email,
-            'password' => $password,
+            'password' => Hash::make($password),
         ]);
 
         $emailOtp->delete();
-
-        $req->session()->forget('register_email');
-        $req->session()->forget('register_name');
-        $req->session()->forget('register_password');
+ 
+        Session::forget('users');
 
         if($user){
             Session::put('user',$user);
@@ -137,11 +151,13 @@ class UserController
     }
 
     function userLogout(){
+        Session::get('users');
         Session::forget('user');
         return redirect('/');
     }
 
     function userSignupQuiz(){
+        Session::get('users');
         Session::put('quiz-url',url()->previous());
         return view('user-signup');
     }
@@ -196,6 +212,7 @@ class UserController
     }   
 
     function submitAndNext(Request $req, $id){
+        Session::get('users');
         $currentQuiz = Session::get('currentQuiz');
         $currentQuiz['currentMcq']+=1;
         $mcqData = MCQ::where([
@@ -248,16 +265,19 @@ class UserController
     }
 
     function userDetails(){
+        Session::get('users');
         $quizRecord = Record::WithQuiz()->where('user_id', Session::get('user')->id)->get();
         return view('user-details', ['quizRecord' => $quizRecord]);
     }
  
     function searchQuiz(Request $request){
+        Session::get('users');
         $quizData = Quiz::withCount('Mcq')->where('name','Like','%'.$request->search.'%')->get();
         return view('quiz-search',['quizData' => $quizData, 'quiz' => $request->search]);
     }
 
     function startQuiz($id, $name){
+        Session::get('users');
         $quizCount =  Mcq::where('quiz_id',$id)->count();
         $mcqs =  Mcq::where('quiz_id',$id)->get();
         Session::put('firstMCQ',$mcqs[0]);
@@ -266,6 +286,7 @@ class UserController
     }
 
     function verifyUser($email){
+        Session::get('users');
         $orgEmail = Crypt::decryptString($email);
         $user = User::where('email', $orgEmail)->first();
         if($user){
