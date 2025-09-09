@@ -12,13 +12,13 @@
     <x-user-navbar></x-user-navbar> 
     <div class="flex flex-col min-h-screen mt-15 items-center bg-gray-100 pt-10">
         @if(session('message-success'))
-            <div>
+            <div class="mt-5">
                 <p class="text-green-500 font-bold">{{session('message-success')}}</p>
             </div>
         @endif
 
         @if (session('success'))
-        <div> 
+        <div class="mt-5"> 
             <p class="text-green-500 font-bold">{{session('success')}}</p>
         </div>
         @endif

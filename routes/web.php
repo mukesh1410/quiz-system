@@ -34,7 +34,7 @@ Route::get('user-login', function(){
     }else{
         return redirect('/');
     }
-});
+})->name('user-login');
 
 Route::get('user-signup', function(){
     if(!session()->has('user')){

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Closure;
@@ -11,24 +10,30 @@ class CheckUserAuth
 {
     public function handle(Request $request, Closure $next)
     {
-        // Agar session me user nhi hai to redirect kar do
+        // Check if user session exists
         if (!session()->has('user')) {
-            return redirect('user-login');
+            return redirect()->route('user-login');
         }
 
-        // Session se user id nikalo
-        $userId = session('user')->id ?? session('user');
+        // Get user ID from session
+        $userId = is_object(session('user')) ? session('user')->id : session('user');
 
-        // User ko DB se load karo
+        // Fetch user from database
         $user = User::find($userId);
+
+        // If user not found in DB, logout and clear session
         if (!$user) {
-            return redirect('user-login');
+            Auth::logout();
+            session()->flush();
+            return redirect()->route('user-login')->withErrors('User account deleted or does not exist.');
         }
 
-        // Laravel Auth me login kara do
-        Auth::login($user);
+        // If not already authenticated, login user
+        if (!Auth::check() || Auth::id() !== $user->id) {
+            Auth::login($user);
+        }
 
-        // Next request ko allow karo
+        // Allow next middleware/request
         return $next($request);
     }
 }
