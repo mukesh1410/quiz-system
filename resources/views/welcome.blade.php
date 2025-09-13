@@ -23,16 +23,6 @@
         </div>
         @endif
         <h1 class="text-4xl font-extrabold text-green-800 text-center my-10">Check Your Skills</h1>
-        @if(Auth::check())
-            @if (Auth::user()->google2fa_secret)
-                <a href="{{ route('2fa.disable') }}" class="bg-yellow-300 rounded-md p-2 mb-1">Disable 2FA</a>
-            @else
-                <a href="{{ route('2fa.setup') }}" class="bg-yellow-300 rounded-md p-2 mb-1">Enable 2FA</a>
-            @endif
-        @else
-            <p>Please login to manage 2FA settings.</p>
-        @endif
-
         <div class="w-full max-w-md">
             <div class="relative">
                 <form action="/search-quiz" method="GET">

@@ -25,7 +25,7 @@
       {{-- @error('user')
         <div class="text-red-500">{{ $message }}</div>
       @enderror --}}
-
+      <a href="{{ URL::to('googleLogin') }}" class="w-full bg-red-500 rounded-xl px-4 py-2 text-white inline-block text-center">Login Via Google</a>
       <form action="/user-login" method="POST" class="space-y-4">
         @csrf
         <div>
@@ -45,6 +45,7 @@
           @enderror
         </div>
         <button type="submit" class="w-full bg-blue-500 rounded-xl px-4 py-2 text-white">Login</button>
+        {{-- <button type="submit" class="w-full bg-yellow-500 rounded-xl px-4 py-2 text-white">Login Via GitHub</button> --}}
         <a href="/user-forgot-password" class="text-green-500">Forget Password</a>
         <div class="text-center">
           <span class="inline">Not a member?</span>

@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Auth;
  
 class UserController
 {
-     function userSignup(Request $req){
+    function userSignup(Request $req){
         $users = $req->validate([
             'name' => 'required|min:3',
             'email' => 'required|email|unique:users',
@@ -46,56 +46,19 @@ class UserController
 
         Session::put('users',$users);
 
-        // $req->session()->put('register_email', $req->email);
-        // $req->session()->put('register_name', $req->name);
-        // $req->session()->put('register_password', Hash::make($req->password));
-
         return redirect()->route('verify.otp');
-
-        // $validate = $req->validate([
-        //     'name' => 'required|min:3',
-        //     'email' => 'required|email|unique:users',
-        //     'password' => 'required|min:3|confirmed'
-        // ]);
-
-        // $user = User::create([
-        //     'name' => $req->name,
-        //     'email' => $req->email,
-        //     'password' => Hash::make($req->password)
-        // ]);
-
-        // $link = Crypt::encryptString($user->email);
-        // $link = url('/verify-user/'.$link);
-        // Mail::to($user->email)->send(new VerifyUser($link));
-
-        // if($user){
-        //     Session::put('user',$user);
-        //     if(Session::has('quiz-url')){
-        //         $url = Session::get('quiz-url');
-        //         Session::forget('quiz-url');
-        //         return redirect($url)->with('message-success','User Registered Successfully, Please check email to verify account');
-        //     }else{
-        //         return redirect('/')->with('message-success','User Registered Successfully, Please check email to verify account');
-        //     }
-        // }
     }
 
-public function welcome()
-{
-    $user = Auth::user();  // Laravel ka authenticated user la rahe hain
-    if ($user && $user->google2fa_secret && !session('2fa_verified')) {
-        return redirect()->route('2fa.verify');
+    public function welcome()
+    {
+        $categories = Category::withCount('quizzes')->orderBy('quizzes_count', 'desc')->paginate(5, ['*'], 'category_page');
+        $quizData = Quiz::withCount('Records')->orderBy('records_count', 'desc')->paginate(5, ['*'], 'quiz_page');
+
+        return view('welcome', [
+            'categories' => $categories,
+            'quizData' => $quizData
+        ]);
     }
-
-    $categories = Category::withCount('quizzes')->orderBy('quizzes_count', 'desc')->paginate(5, ['*'], 'category_page');
-    $quizData = Quiz::withCount('Records')->orderBy('records_count', 'desc')->paginate(5, ['*'], 'quiz_page');
-
-    return view('welcome', [
-        'categories' => $categories,
-        'quizData' => $quizData
-    ]);
-}
-
 
     function categories(){
         Session::get('users');
